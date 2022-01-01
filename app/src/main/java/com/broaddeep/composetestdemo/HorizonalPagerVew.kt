@@ -28,69 +28,40 @@ fun HorizonalPagerVew() {
     }
 
     val state = rememberPagerState(pageCount = datas.size,
-        initialPage = 2,
-        infiniteLoop = true,
-        initialOffscreenLimit = 1)
+        initialPage = 0,//初始页码
+        infiniteLoop = true,//是否循环效果
+        initialOffscreenLimit = 1//预加载页数
+    )
     val scope = rememberCoroutineScope()
-    val scaffoldState = rememberScaffoldState()
-    Scaffold(snackbarHost = {
-        SnackbarHost(hostState = it){data->
-            Snackbar(
-                snackbarData = data,
-                backgroundColor = Color.Green,
-                contentColor = Color.White,
-                shape = CutCornerShape(10.dp)
-            )
-        }
-
-    },
-    scaffoldState = scaffoldState,
-    bottomBar = {
-        BottomAppBar {
-            Text(text = "底部导航栏")
-        }
-    }
-    ) {
-        Column {
-            ScrollableTabRow(selectedTabIndex = state.currentPage, backgroundColor = Color.Green) {
-                datas.forEachIndexed { index, data ->
-                    Box(Modifier
+    Column {
+        ScrollableTabRow(selectedTabIndex = state.currentPage,//展示的页码，和Pager的保持一致
+            backgroundColor = Color.Green) {
+            datas.forEachIndexed { index, data ->
+                Box(
+                    Modifier
                         .height(40.dp)
                         .width(100.dp)
                         .clickable {
                             scope.launch {
-                                state.scrollToPage(index, 0f)
+                                state.scrollToPage(index, 0f)//Tab被点击后让Pager中内容动画形式滑动到目标页
                             }
                         }, contentAlignment = Alignment.Center) {
-                        Text(text = data)
-                    }
+                    Text(text = data)
                 }
             }
-            HorizontalPager(state = state, modifier = Modifier.height(300.dp)) { pagePosition ->
-                Log.e("tag", "加载页码$pagePosition")
-                val color = (0..255)
-                Box(Modifier
+        }
+        HorizontalPager(state = state,//Pager当前所在页数
+            modifier = Modifier.height(300.dp)) { pagePosition ->
+            Log.e("tag", "加载页码$pagePosition")
+            val color = (0..255)
+            Box(
+                Modifier
                     .fillMaxSize()
                     .background(Color(color.random(), color.random(), color.random())),
-                    contentAlignment = Alignment.Center) {
-                    Text(text = datas[pagePosition])
-                }
+                contentAlignment = Alignment.Center) {
+                Text(text = datas[pagePosition])
             }
-            Button(onClick = {
-                Trace.beginSection("")
-                trace(""){
-                    (0..30).forEach {
-                        println("index:$it")
-                    }
-                }
-                scope.launch {
-                    val showSnackbar = scaffoldState.snackbarHostState.showSnackbar("哈哈哈哈",
-                        duration = SnackbarDuration.Short)
-                }
-            }) {
-                Text(text = "showToast")
-            }
-
         }
     }
+
 }

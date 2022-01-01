@@ -40,6 +40,9 @@ fun Greeting() {
         composable(home){
             Home(controller)
         }
+        composable(HorizonalPagerVew){
+            HorizonalPagerVew()
+        }
         composable(TabRow){
             TabRowView()
         }
